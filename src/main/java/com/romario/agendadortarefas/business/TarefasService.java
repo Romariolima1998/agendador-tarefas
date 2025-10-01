@@ -23,8 +23,6 @@ public class TarefasService {
     private final TarefaUpdateconverter tarefaUpdateconverter;
 
     public TarefasDTO gravarTarefa(String token,TarefasDTO dto){
-        String email = jwtUtil.extractUsername(token.substring(7));
-        dto.setEmailUsuario(email);
         dto.setDataCriacao(LocalDateTime.now());
         dto.setStatusNotificacaoEnum(StatusNotificacaoEnum.PENDENTE);
         TarefasEntity tarefa = tarefasRepository.save(tarefasConverter.paraTarefasEntity(dto));
@@ -35,7 +33,8 @@ public class TarefasService {
             LocalDateTime dataInicial, LocalDateTime dataFinal
     ){
     return tarefasConverter.paraListaTarefasDTO(
-            tarefasRepository.findByDataEventoBetween(dataInicial, dataFinal)
+            tarefasRepository.findByDataEventoBetweenAndStatusNotificacaoEnum(
+                    dataInicial, dataFinal, StatusNotificacaoEnum.PENDENTE)
     );
     }
     public List<TarefasDTO> buscaTarefasPorEmail(String token){
